@@ -8,7 +8,7 @@ const requireAuth = (req,res,next)=>{
         jwt.verify(token,secretKey,(err,decodedToken) =>
         {
             if(err){
-                res.status(500).json("Bhak")
+                res.status(403).json("Bhak")
             }else{
                 res.status(200).json("aaja andar")
                 //next()
