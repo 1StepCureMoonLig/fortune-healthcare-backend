@@ -1,7 +1,10 @@
 const debug = require('debug')('server:app')
 const express = require('express')
 const cors = require('cors')
-// const initDatabase = require('./config/database')
+const cookieParser = require('cookie-parser')
+const initDatabase = require('./config/database')
+const authRoutes = require('./routes/authRoutes')
+const { requireAuth } = require('./middlewares/authmiddlewares');
 // const initRoutes = require('./routes')
 require('dotenv').config()
 
@@ -12,14 +15,16 @@ const options = {
 }
 
 app.use(cors(options))
+app.use(cookieParser())	
 app.use(express.json())
+app.use(authRoutes)
 
-// initDatabase()
+initDatabase()
 // initRoutes(app)
 
-app.get('/', (_, res) => res.send('Server up and running!!'))
+app.get('/',requireAuth, (_, res) => res.send('Yoo css noobie'))
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
-	debug(`Server is up and running on port ${port}!!`)
+	debug(`Server is up and running on port ${port}`)
 })
