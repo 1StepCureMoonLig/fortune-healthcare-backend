@@ -22,7 +22,8 @@ app.use(authRoutes)
 initDatabase()
 // initRoutes(app)
 
-app.get('/',requireAuth, (_, res) => res.send('Yoo css noobie'))
+// app.get('/',requireAuth, (_, res) => res.send('Yoo css noobie')) 
+app.get('/', (_, res) => res.send('Yoo css noobie'))
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
