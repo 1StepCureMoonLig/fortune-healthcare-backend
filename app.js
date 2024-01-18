@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser')
 const initDatabase = require('./config/database')
 const authRoutes = require('./routes/authRoutes')
 const { requireAuth } = require('./middlewares/authmiddlewares');
-// const initRoutes = require('./routes')
+const initRoutes = require('./routes')
 require('dotenv').config()
 
 const app = express()
@@ -20,11 +20,11 @@ app.use(express.json())
 app.use(authRoutes)
 
 initDatabase()
-// initRoutes(app)
+initRoutes(app)
 
 app.get('/',requireAuth, (_, res) => res.send('Yoo css noobie'))
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000
 app.listen(port, () => {
 	debug(`Server is up and running on port ${port}`)
 })
