@@ -43,6 +43,7 @@ userSchema.statics.login = async function(email, password) {
         throw { Error : error.message };
     }
 }
+
 const User = mongoose.model('user', userSchema)
 
 module.exports = User
