@@ -3,20 +3,16 @@ const mongoose = require('mongoose')
 
 const initDatabase = () => {
 	debug('Initializing Database Connection...')
-	let dbUri = "mongodb://localhost:27017/fortuneHealthcare" //process.env.DB_URI 
-	let options = {
-		autoIndex: false,
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	}
+	let dbUri = "mongodb+srv://moonlightingcollection:yVWDzEjVzJq0uRiX@1stepcure.4b09wnk.mongodb.net/?retryWrites=true&w=majority" //process.env.DB_URI 
+	let options = {}
 
 	mongoose.connect(dbUri, options)
 	
-	// const connection = mongoose.connection
-	// connection.on('connected', () => debug('Connnected to Database'))
-	// connection.on('error', err => debug(`Database error: ${err}`))
-	// connection.on('disconnected', () => debug('Disconnnected from Database'))
-	// connection.on('reconnected', () => debug('Reconnnected to Database'))
+	const connection = mongoose.connection
+	connection.on('connected', () => debug('Connnected to Database'))
+	connection.on('error', err => debug(`Database error: ${err}`))
+	connection.on('disconnected', () => debug('Disconnnected from Database'))
+	connection.on('reconnected', () => debug('Reconnnected to Database'))
 }
 
 module.exports = initDatabase
