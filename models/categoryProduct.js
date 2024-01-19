@@ -2,7 +2,16 @@ const mongoose = require('mongoose')
 
 
 const category = new mongoose.Schema({
-    category : String
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true
+    },
+    products: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }]
 })
 const product = new mongoose.Schema({
     productName: {
@@ -26,12 +35,16 @@ const product = new mongoose.Schema({
         }
     ],
     productintro : String,
-    benifits : String
+    benifits : String,
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }
 
 })
 
-const Category = mongoose.model('category', category)
-const Product = mongoose.model('product', product)
+const Category = mongoose.model('Category', category);
+const Product = mongoose.model('Product', product);
 
 
 module.exports = {Category, Product}

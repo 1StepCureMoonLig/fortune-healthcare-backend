@@ -1,30 +1,57 @@
 const User = require('../models/user');
-const categoryProduct = require('../models/categoryProduct')
+const {Category, Product} = require('../models/categoryProduct')
 const debug = require('debug')('server:app')
 
 
-const addProduct = async (req, res) => {
-   
-}
+const addCategoryProduct = async (req, res) => {
+    const { categories, products } = req.body;
 
-const getCategory = async (req,res) => {
-    
-}
+    try {
+        if (categories && categories.length > 0) {
+            await Category.insertMany(categories);
+        }
 
-const getProduct = async (req,res) => {
-    
-}
+        if (products && products.length > 0) {
+            await Product.insertMany(products);
+        }
 
-const addCategory = async (req, res) => {
-    const {category} = req.body
-    try{
-        const newCategory = categoryProduct.Category.create({
-            category    
-        });
-        res.status(200).json(category);
-    }catch(err){
-        debug(err)
+        if ((categories && categories.length > 0) && (products && products.length > 0)) {
+            res.status(201).json({ message: 'Categories and products added successfully' });
+        } else if (categories && categories.length > 0) {
+            res.status(201).json({ message: 'Categories added successfully' });
+        } else if (products && products.length > 0) {
+            res.status(201).json({ message: 'Products added successfully' });
+        } else {
+            res.status(400).json({ message: 'Categories or products data is missing' });
+        }
+    } catch (error) {
+        console.error(error.code);
+        if(error.code===11000){
+            res.status(400).json({ message: 'Category already exits' });
+        }
+        res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
+const getCategoryProduct = async (req, res) => {
+    const { category, product } = req.query;
+    try {
+        let query = {};
 
-module.exports ={addProduct, getCategory, getProduct, addCategory}
+        if (category) {
+            query.category = category;
+        }
+
+        if (product) {
+            query.productName = product;
+        }
+
+        const result = await Product.find(query);
+
+        res.status(200).json({ products: result });
+    } catch (error) {
+        debug(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+module.exports ={addCategoryProduct, getCategoryProduct}
