@@ -38,8 +38,8 @@ const product = new mongoose.Schema({
             }
         }
     ],
-    productintro : String,
-    benifits : String
+    productIntro : String,
+    benefits : String
 })
     const cart = new mongoose.Schema({
         user : {
