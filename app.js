@@ -12,7 +12,7 @@ require('dotenv').config()
 const app = express()
 const options = {
 	credentials: true,
-	origin: ['http://localhost:4200', 'https://thecrypt2.vercel.app', 'https://thecrypt2-git-dev-nekros1712.vercel.app']
+	origin: 'http://localhost:3000'
 }
 
 app.use(cors(options))
