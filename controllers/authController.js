@@ -16,14 +16,15 @@ const signup = async (req, res) => {
         const newUser = await User.create({
             name, email, password
         });
-        const token = createToken(newUser._id);
-        const options = {
-            httpOnly:true,
-            maxAge: maxAge
-        }
+        // const token = createToken(newUser._id);
+        // const options = {
+        //     httpOnly:true,
+        //     maxAge: maxAge
+        // }
+        // 
+        // res.cookie("ftune", token,options)
         response.success="User created successfully"
-        res.cookie("ftune", token,options)
-        res.status(201).json(response);
+        res.status(201).json(newUser._id);
     } catch (err) {
         debug(err)
         if (err.code === 11000) {
@@ -42,6 +43,7 @@ const login = async (req, res) =>{
     const response={}
     try{
         const user = await User.login(email,password)
+        debug(user)
         const token = createToken(user._id);
         const options = {
             httpOnly:true,
