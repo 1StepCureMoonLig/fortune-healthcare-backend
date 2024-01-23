@@ -1,12 +1,13 @@
 const authRoutes = require('./authRoutes')
 const checkoutRoutes = require('./checkoutRoutes')
 const collectionRoutes = require('./collectionRoutes')
-const searchBar = require('./')
+const cartRoutes = require('./cartRoutes')
 
 const initRoutes = app => {
     app.use('/auth', authRoutes)
     app.use('/checkout', checkoutRoutes)
-    app.use('/collection', collectionRoutes)
+    app.use('/product', collectionRoutes)
+    app.use('/cart', cartRoutes)
 }
 
 module.exports = initRoutes

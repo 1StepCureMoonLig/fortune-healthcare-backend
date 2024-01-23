@@ -22,6 +22,7 @@ const product = new mongoose.Schema({
         type: String,
         required: true
     },
+    prodImgLink: String,
     brand: String,
     activeIngredient: String,
     use: String,
@@ -41,24 +42,39 @@ const product = new mongoose.Schema({
     productIntro : String,
     benefits : String
 })
-    const cart = new mongoose.Schema({
-        user : {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        cartDetails:[
-            {
-                product_id:{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product'
-                },
-                count :{
-                    type : Number,
-                    default : 0
+const cart = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    cartDetails: [
+        {
+            product_id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product'
+            },
+            totalQty: [
+                {
+                    quantity: {
+                        type: Number,
+                        default: 0
+                    },
+                    count: {
+                        type: Number,
+                        default: 0
+                    },
+                    cost: {
+                        type: Number,
+                        default: 0
+                    }
                 }
-            }
-        ]
-    })
+            ]
+        }
+    ]
+});
+
+
+
 // const Category = mongoose.model('Category', category);
 const Product = mongoose.model('Product', product);
 const Cart = mongoose.model('Cart', cart);
