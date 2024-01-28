@@ -29,8 +29,8 @@ const getCategoryProduct = async (req, res) => {
         if (product) {
             query._id= product;
         }
-
         const result = await Product.find(query);
+        debug(result)
 
         res.status(200).json({ products: result });
     } catch (error) {
@@ -40,7 +40,6 @@ const getCategoryProduct = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-    debug("inside cart");
     const cartData = req.body;
     const userId = req.cookies.ftune;
     const secretKey = "Mnet2024";
@@ -55,6 +54,7 @@ const updateCart = async (req, res) => {
                     let existingCart = await Cart.findOne({ user: decodedToken.id });
 
                     if (!existingCart) {
+                        debug("inside cart")
                         existingCart = new Cart({
                             user: decodedToken.id,
                             cartDetails: cartData.cartDetails
@@ -288,7 +288,6 @@ const finalCart = async (req, res) => {
                             totalQty: totalQtyWithCost
                         };
                     });
-
                     res.status(200).json(adjustedCart);
                 } catch (err) {
                     res.status(500).json(err.message);
