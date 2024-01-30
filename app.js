@@ -10,7 +10,7 @@ const initRoutes = require('./routes')
 const app = express()
 const options = {
 	credentials: true,
-	origin: 'https://main--chic-sable-f59f7b.netlify.app'
+	origin: 'https://1stepcure.com'
 }
 
 app.use(cors(options))
