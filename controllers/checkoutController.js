@@ -7,7 +7,7 @@ function sendEmail(to, subject, html) {
         service: 'gmail',
         auth: {
             user: process.env.gmailUser,  // Replace with your email
-            pass: process.env.pass, // Replace with your password
+            pass: process.env.gPass, // Replace with your password
         },
     });
 
