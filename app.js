@@ -6,7 +6,6 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const initDatabase = require('./config/database')
 const initRoutes = require('./routes')
-require('dotenv').config()
 
 const app = express()
 const options = {
@@ -21,7 +20,6 @@ app.use(express.json())
 initDatabase()
 initRoutes(app)
 
-// app.get('/',requireAuth, (_, res) => res.send('Yoo css noobie')) 
  app.get('/', (_, res) => res.send('Yoo css noobie'))
 
 const port = process.env.PORT || 5000
