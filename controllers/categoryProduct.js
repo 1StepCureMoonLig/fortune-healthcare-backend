@@ -30,7 +30,6 @@ const getCategoryProduct = async (req, res) => {
             query._id= product;
         }
         const result = await Product.find(query);
-        debug(result)
 
         res.status(200).json({ products: result });
     } catch (error) {
@@ -45,7 +44,7 @@ const updateCart = async (req, res) => {
     const secretKey = "Mnet2024";
 
     if (userId) {
-        debug("inside usedid");
+      //  debug("inside usedid");
         jwt.verify(userId, secretKey, async (err, decodedToken) => {
             if (err) {
                 res.status(403).json("Invalid token");
@@ -243,12 +242,13 @@ const finalCart = async (req, res) => {
     const secretKey = "Mnet2024";
 
     if (userId) {
-        debug("inside usedid");
+       // debug("inside usedid");
         jwt.verify(userId, secretKey, async (err, decodedToken) => {
             if (err) {
                 res.status(403).json("Invalid token");
             } else {
                 try {
+                    // debug(decodedToken)
                     let gotCart = await Cart.findOne({ user: decodedToken.id })
                         .populate({
                             path: 'cartDetails.product_id',
@@ -288,6 +288,7 @@ const finalCart = async (req, res) => {
                             totalQty: totalQtyWithCost
                         };
                     });
+                    // debug(adjustedCart)
                     res.status(200).json(adjustedCart);
                 } catch (err) {
                     res.status(500).json(err.message);
