@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 const initDatabase = () => {
 	debug('Initializing Database Connection...')
-	let dbUri = "mongodb+srv://moonlightingcollection:yVWDzEjVzJq0uRiX@1stepcure.4b09wnk.mongodb.net/?retryWrites=true&w=majority" //process.env.DB_URI 
+	let dbUri = process.env.DB_URI 
 	let options = {}
 
 	mongoose.connect(dbUri, options)

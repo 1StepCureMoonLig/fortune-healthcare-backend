@@ -6,8 +6,8 @@ function sendEmail(to, subject, html) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "1stepcure@gmail.com", // Replace with your email
-            pass: "dvgbkddtagilqtex", // Replace with your password
+            user: process.env.gmailUser,  // Replace with your email
+            pass: process.env.pass, // Replace with your password
         },
     });
 
@@ -84,7 +84,7 @@ module.exports = {
                           <p>Sender Name: ${feedbackSenderData.firstName} ${feedbackSenderData.lastName}</p>
                           <p>Sender Email: ${feedbackSenderData.email}</p>`;
 
-       // sendEmail("1stepcure@gmail.com", "Feedback Received", emailBody);
+        sendEmail("1stepcure@gmail.com", "Feedback Received", emailBody);
 
         res.send("Feedback received successfully");
     },
@@ -94,8 +94,8 @@ module.exports = {
         debug("Details:", details);
 
         // Send email with prescription details
-        // const htmlBody = `<p>Email: ${email}</p><p>Details: ${details}</p>`;
-        // sendEmail("1stepcure@gmail.com", "Prescription/Query Details", htmlBody);
+         const htmlBody = `<p>Email: ${email}</p><p>Details: ${details}</p>`;
+        sendEmail("1stepcure@gmail.com", "Prescription/Query Details", htmlBody);
 
          res.send('Prescription details received and email sent successfully.');
     }
