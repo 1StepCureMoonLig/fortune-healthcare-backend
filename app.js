@@ -10,7 +10,7 @@ const initRoutes = require('./routes')
 const app = express()
 const options = {
 	credentials: true,
-	origin: ['https://1stepcure.com', 'https://melodic-macaron-19a5fa.netlify.app']
+	origin: ['https://1stepcure.com', 'https://main--melodic-macaron-19a5fa.netlify.app', 'http://localhost:3000']
 }
 
 app.use(cors(options))
