@@ -76,7 +76,7 @@ module.exports = {
 
         // Send notification email to the company
         sendEmail("1stepcure@gmail.com", 'New Order Received', htmlBodyCompanyAndUser);
-
+        //added coment to refresh DB
         res.send('Order submitted successfully');
     },
     feedBack: (req, res) => {
