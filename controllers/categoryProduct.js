@@ -41,7 +41,7 @@ const getCategoryProduct = async (req, res) => {
 const updateCart = async (req, res) => {
   
     const cartData = req.body;
-    const userId = req.body.ftune;
+    const userId = req.body.ftune; 
     const secretKey = "Mnet2024";
     console.log(req.body)
     if (userId) {
@@ -240,7 +240,7 @@ const updateCart = async (req, res) => {
 const finalCart = async (req, res) => {
     
     debug("inside cart");
-    const userId = req.body.ftune;
+    const userId = req.query.ftune;
     const secretKey = "Mnet2024";
     console.log(req.body)
 
