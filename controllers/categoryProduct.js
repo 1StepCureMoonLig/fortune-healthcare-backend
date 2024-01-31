@@ -42,7 +42,7 @@ const updateCart = async (req, res) => {
     const cartData = req.body;
     const userId = req.cookies.ftune;
     const secretKey = "Mnet2024";
-
+    console.log(userId)
     if (userId) {
       //  debug("inside usedid");
         jwt.verify(userId, secretKey, async (err, decodedToken) => {
@@ -237,9 +237,11 @@ const updateCart = async (req, res) => {
 
 
 const finalCart = async (req, res) => {
+    
     debug("inside cart");
     const userId = req.cookies.ftune;
     const secretKey = "Mnet2024";
+    console.log(userId)
 
     if (userId) {
        // debug("inside usedid");
