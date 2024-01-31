@@ -39,10 +39,11 @@ const getCategoryProduct = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
+  
     const cartData = req.body;
-    const userId = req.cookies.ftune;
+    const userId = req.body.ftune;
     const secretKey = "Mnet2024";
-    console.log(userId)
+    console.log(req.body)
     if (userId) {
       //  debug("inside usedid");
         jwt.verify(userId, secretKey, async (err, decodedToken) => {
@@ -241,7 +242,7 @@ const finalCart = async (req, res) => {
     debug("inside cart");
     const userId = req.body.ftune;
     const secretKey = "Mnet2024";
-    console.log(userId)
+    console.log(req.body)
 
     if (userId) {
        // debug("inside usedid");
