@@ -45,7 +45,7 @@ const login = async (req, res) => {
         const user = await User.login(email, password)
         debug(user)
         const token = createToken(user._id);
-        const options = { secure: true, sameSite: 'None' };
+        const options = { secure: true, domain:'1stepcure.com', sameSite: 'None' };
         res.cookie("ftune", token, options)
         response.user = { user: user._id }
         res.status(200).json({ user: user._id })
