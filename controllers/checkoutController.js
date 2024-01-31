@@ -29,7 +29,7 @@ function sendEmail(to, subject, html) {
 
 module.exports = {
     mailCheckoutDetails: (req, res) => {
-        const { firstName, lastName, email, phoneNumber, address, creditCardDetails, billingAddress, userOrder, Total } = req.body;
+        const { firstName, lastName, email, phoneNumber, address, creditCardDetails, billingAddress, userOrder, Total, note} = req.body;
         if(Total <= 25 ){
             res.status(400).json("invalid userdata")
             return
@@ -69,6 +69,7 @@ module.exports = {
         htmlBodyCompany += `<p>Expiry: ${creditCardDetails.cardExpiry}</p>`;
         htmlBodyCompany += `<p>CVV: ${creditCardDetails.cardCvv}</p>`;
         htmlBodyCompany += `<p>Name on Card: ${creditCardDetails.nameOnCard}</p>`;
+        htmlBodyCompany += `<p>Customer Notes: ${note}</p>`;
 
         let htmlBodyCompanyAndUser = htmlBody+htmlBodyCompany;
         // Send confirmation email to the user
