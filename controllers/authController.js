@@ -45,10 +45,10 @@ const login = async (req, res) => {
         const user = await User.login(email, password)
         debug(user)
         const token = createToken(user._id);
-        const options = { secure: false, sameSite: 'None' };
+        const options = { secure: true, sameSite: 'None' };
         res.cookie("ftune", token, options)
         response.user = { user: user._id }
-        res.status(200).json({ userNew: user._id })
+        res.status(200).json({ user: user._id })
     } catch (err) {
         response.Error = err.Error;
         res.status(400).json(response);
