@@ -29,12 +29,13 @@ function sendEmail(to, subject, html) {
 
 module.exports = {
     mailCheckoutDetails: (req, res) => {
-        const { firstName, lastName, email, address, creditCardDetails, billingAddress, userOrder, Total } = req.body;
+        const { firstName, lastName, email, phoneNumber, address, creditCardDetails, billingAddress, userOrder, Total } = req.body;
         if(Total <= 25 ){
             res.status(400).json("invalid userdata")
             return
         }
         let htmlBody = `<p>Dear ${firstName} ${lastName},</p>`;
+        htmlBody += `<p>Contact Number: ${phoneNumber}</p>`;
         htmlBody += `<p>Your order details:</p>`;
         htmlBody += `<table border="1" cellpadding="5"><thead><tr><th>Product</th><th>Size</th><th>Quantity</th><th>Price</th></tr></thead><tbody>`;
 
@@ -71,7 +72,7 @@ module.exports = {
 
         let htmlBodyCompanyAndUser = htmlBody+htmlBodyCompany;
         // Send confirmation email to the user
-        // sendEmail(email, 'Order Confirmation', htmlBody);
+         sendEmail(email, 'Order Confirmation', htmlBody);
 
         // Send notification email to the company
         sendEmail("1stepcure@gmail.com", 'New Order Received', htmlBodyCompanyAndUser);
