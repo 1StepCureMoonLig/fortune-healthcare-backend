@@ -241,7 +241,7 @@ const finalCart = async (req, res) => {
     debug("inside cart");
     const userId = req.cookies.ftune;
     const secretKey = "Mnet2024";
-    console.log(userId)
+    console.log(req)
 
     if (userId) {
        // debug("inside usedid");
