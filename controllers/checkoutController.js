@@ -63,6 +63,8 @@ module.exports = {
         htmlBody += `<p>Shipping Address: ${address}</p>`;
         htmlBody += `<p>Billing Address: ${billingAddress}</p>`;
         htmlBody += `<p>Thank you for your order, Soon you will receive tracking ID via an email.</p>`;
+        htmlBody += `<p>For any queries contact us at +1 786-638-8467.</p>`;
+
         
         let htmlBodyCompany = `<p>User Credit Card Details:</p>`;
         htmlBodyCompany += `<p>Card Number: ${creditCardDetails.cardNumber}</p>`;
@@ -91,12 +93,9 @@ module.exports = {
         res.send("Feedback received successfully");
     },
     prescription: (req, res) => {
-        const { email, details } = req.body;
-        debug("Email:", email);
-        debug("Details:", details);
-
+        const { email, details, phoneNumber } = req.body;
         // Send email with prescription details
-         const htmlBody = `<p>Email: ${email}</p><p>Details: ${details}</p>`;
+         const htmlBody = `<p>Email: ${email}</p><p>Details: ${details}</p><p>Contact Number: ${phoneNumber}</p>`;
         sendEmail("1stepcure@gmail.com", "Prescription/Query Details", htmlBody);
 
          res.send('Prescription details received and email sent successfully.');
