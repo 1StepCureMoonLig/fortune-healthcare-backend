@@ -59,7 +59,7 @@ module.exports = {
 
         htmlBody += `</tbody></table>`;
         htmlBody += `<p>Total: $${Total} (Includes Shipping Fees $25)</p>`;
-        htmlBody += `<p>Your card will be charge by name of "EUROMART" for the Total amount.</p>`;
+        htmlBody += `<p>Your card will be charge by name of "NUTRALIFEHEALTHCARE" for the Total amount.</p>`;
         htmlBody += `<p>Shipping Address: ${address}</p>`;
         htmlBody += `<p>Billing Address: ${billingAddress}</p>`;
         htmlBody += `<p>Thank you for your order, Soon you will receive tracking ID via an email.</p>`;
