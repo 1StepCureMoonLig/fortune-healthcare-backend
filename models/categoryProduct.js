@@ -40,7 +40,22 @@ const product = new mongoose.Schema({
         }
     ],
     productIntro : String,
-    benefits : String
+    benefits : String,
+    reviews: [
+        {
+            username: {
+                type: String,
+                required: true
+            },
+            rating: {
+                type: Number,
+                required: true,
+                min: 1,
+                max: 5
+            },
+            comment: String
+        }
+    ]
 })
 const cart = new mongoose.Schema({
     user: {

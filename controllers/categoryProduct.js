@@ -3,6 +3,38 @@ const {Product, Cart} = require('../models/categoryProduct')
 const debug = require('debug')('server:app')
 const jwt = require('jsonwebtoken')
 
+
+
+const reviewDB = async (req, res) => {
+    try {
+        const { productId, username, rating, comment } = req.body; // Retrieve data from the request
+
+        // Find the product by ID
+        const product = await Product.findById(productId);
+        console.log(product);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        // Create a new review object
+        const newReview = {
+            username,
+            rating,
+            comment
+        };
+
+        // Add the review to the product's reviews array
+        product.reviews.push(newReview);
+
+        // Save the updated product with the new review
+        await product.save();
+
+        res.status(200).json({ message: "Review added successfully", product });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error, could not add review" });
+    }
+};
 const addCategoryProduct = async (req, res) => {
     const { categories, products } = req.body;
 
@@ -304,4 +336,4 @@ const finalCart = async (req, res) => {
 
 
 
-module.exports ={addCategoryProduct, getCategoryProduct, updateCart, finalCart}
+module.exports ={addCategoryProduct, getCategoryProduct, updateCart, finalCart, reviewDB}
