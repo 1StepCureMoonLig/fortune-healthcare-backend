@@ -5,12 +5,14 @@ function sendEmail(to, subject, html) {
   debug("inside mail");
     console.log("insidemaillll");
     const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.gmailUser, // Replace with your email
-      pass: process.env.gPass, // Replace with your password
-    },
-  });
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: process.env.gmailUser,
+            pass: process.env.gPass, // Use App Password here
+        },
+    });
     console.log("transporter")
     console.log(transporter)
   const mailOptions = {
