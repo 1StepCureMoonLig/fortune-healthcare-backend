@@ -3,7 +3,8 @@ const debug = require("debug")("server:app");
 
 function sendEmail(to, subject, html) {
   debug("inside mail");
-  const transporter = nodemailer.createTransport({
+    console.log("insidemaillll");
+    const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.gmailUser, // Replace with your email
@@ -20,7 +21,7 @@ function sendEmail(to, subject, html) {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error(error);
+        console.log("errorrrrrrrrrrrrrrrrrr", error);
     } else {
       console.log("Email sent: " + info.response);
     }
