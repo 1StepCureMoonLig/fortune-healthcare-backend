@@ -21,7 +21,13 @@ function sendEmail(to, subject, html) {
     subject: subject,
     html: html,
   };
-
+    try {
+        transporter.verify();
+        console.log("✓ SMTP connection verified");
+    } catch (error) {
+        console.error("✗ SMTP verification failed:", error.message);
+        throw error;
+    }
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
         console.log("errorrrrrrrrrrrrrrrrrr", error);
