@@ -11,7 +11,8 @@ function sendEmail(to, subject, html) {
       pass: process.env.gPass, // Replace with your password
     },
   });
-
+    console.log("transporter")
+    console.log(transporter)
   const mailOptions = {
     from: "1stepcure@gmail.com", // Replace with your email
     to: to,
