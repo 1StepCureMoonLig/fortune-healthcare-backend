@@ -4,6 +4,12 @@ const debug = require("debug")("server:app");
 function sendEmail(to, subject, html) {
   debug("inside mail");
     console.log("insidemaillll");
+    console.log("subject: ");
+    console.log(subject);
+    console.log("to");
+    console.log(to);
+    console.log("html");
+    console.log(html);
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -128,3 +134,5 @@ module.exports = {
     res.send("Prescription details received and email sent successfully.");
   },
 };
+
+
