@@ -6,8 +6,8 @@ async function sendEmail(to, subject, html) {
     console.log("insidemaillll");
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 465,
-        secure: true, // Use SSL
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.gmailUser,
             pass: process.env.gPass,
