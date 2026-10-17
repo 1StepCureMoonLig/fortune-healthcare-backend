@@ -1,121 +1,242 @@
+
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 const debug = require("debug")("server:app");
 
-function sendEmail(to, subject, html) {
-  debug("inside mail");
-    console.log("insidemaillll");
-    const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.gmailUser, // Replace with your email
-      pass: process.env.gPass, // Replace with your password
-    },
-  });
+// OAuth2 configuration for Gmail API
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET
+);
 
-  const mailOptions = {
-    from: "1stepcure@gmail.com", // Replace with your email
-    to: to,
-    subject: subject,
-    html: html,
-  };
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+});
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        console.log("errorrrrrrrrrrrrrrrrrr", error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
+const gmail = google.gmail({
+  version: "v1",
+  auth: oauth2Client,
+});
+
+// Nodemailer constructs the MIME message; it does NOT use SMTP.
+const mailComposer = nodemailer.createTransport({
+  streamTransport: true,
+  buffer: true,
+  newline: "unix",
+});
+
+// Escape user-provided values before inserting them into HTML.
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[char];
   });
 }
 
+async function sendEmail(to, subject, html) {
+  debug("Sending email through Gmail API");
+
+  const from = process.env.GMAIL_USER;
+
+  if (
+    !from ||
+    !process.env.GOOGLE_CLIENT_ID ||
+    !process.env.GOOGLE_CLIENT_SECRET ||
+    !process.env.GOOGLE_REFRESH_TOKEN
+  ) {
+    throw new Error("Gmail API environment variables are missing");
+  }
+
+  // Construct the email without making an SMTP connection.
+  const message = await mailComposer.sendMail({
+    from,
+    to,
+    subject,
+    html,
+  });
+
+  // Gmail API expects a base64url-encoded MIME message.
+  const raw = message.message.toString("base64url");
+
+  const result = await gmail.users.messages.send({
+    userId: "me",
+    requestBody: { raw },
+  });
+
+  console.log("Email sent:", result.data.id);
+  return result.data;
+}
+
 module.exports = {
-  mailCheckoutDetails: (req, res) => {
-    const {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      address,
-      creditCardDetails,
-      billingAddress,
-      userOrder,
-      Total,
-      note,
-    } = req.body;
-    if (Total <= 25) {
-      res.status(400).json("invalid userdata");
-      return;
-    }
-    let htmlBody = `<p>Dear ${firstName} ${lastName},</p>`;
-    htmlBody += `<p>Contact Number: ${phoneNumber}</p>`;
-    htmlBody += `<p>Your order details:</p>`;
-    htmlBody += `<table border="1" cellpadding="5"><thead><tr><th>Product</th><th>Size</th><th>Quantity</th><th>Price</th></tr></thead><tbody>`;
+  mailCheckoutDetails: async (req, res) => {
+    try {
+      const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        address,
+        billingAddress,
+        userOrder,
+        Total,
+        note,
+      } = req.body;
 
-    userOrder.forEach((order) => {
-      if (order.packs.length > 0) {
-        // Check if packs array length is greater than 0
-        htmlBody += `<tr><td rowspan="${order.packs.length}">${order.name}</td>`;
-        order.packs.forEach((pack, index) => {
-          if (index !== 0) {
-            htmlBody += `<tr>`;
-          }
-          htmlBody += `<td>${pack.size}</td>`;
-          htmlBody += `<td>${pack.quantity}</td>`;
-          htmlBody += `<td>${pack.price}</td>`;
-          if (index === 0) {
-            htmlBody += `<td rowspan="${order.packs.length}">$${order.packs
-              .reduce((total, pack) => total + pack.quantity * pack.price, 0)
-              .toFixed(2)}</td>`;
-          }
-          htmlBody += `</tr>`;
-        });
+      const total = Number(Total);
+
+      if (
+        !Number.isFinite(total) ||
+        total <= 25 ||
+        !Array.isArray(userOrder) ||
+        !email ||
+        !firstName
+      ) {
+        return res.status(400).json("Invalid userdata");
       }
-    });
 
-    htmlBody += `</tbody></table>`;
-    htmlBody += `<p>Total: $${Total} (Includes Shipping Fees $25)</p>`;
-    htmlBody += `<p>Your card will be charge by name of "HERBAL EXCHANGE LLC" for the Total amount.</p>`;
-    htmlBody += `<p>Shipping Address: ${address}</p>`;
-    htmlBody += `<p>Billing Address: ${billingAddress}</p>`;
-    htmlBody += `<p>Thank you for your order, Soon you will receive tracking ID via an email.</p>`;
-    htmlBody += `<p>For any queries contact us at +1 786-638-8467.</p>`;
+      let htmlBody = `
+        <p>Dear ${escapeHtml(firstName)} ${escapeHtml(lastName)},</p>
+        <p>Contact Number: ${escapeHtml(phoneNumber)}</p>
+        <p>Your order details:</p>
+        <table border="1" cellpadding="5">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
 
-    let htmlBodyCompany = `<p>User Credit Card Details:</p>`;
-    htmlBodyCompany += `<p>Card Number: ${creditCardDetails.cardNumber}</p>`;
-    htmlBodyCompany += `<p>Expiry: ${creditCardDetails.cardExpiry}</p>`;
-    htmlBodyCompany += `<p>CVV: ${creditCardDetails.cardCvv}</p>`;
-    htmlBodyCompany += `<p>Name on Card: ${creditCardDetails.nameOnCard}</p>`;
-    htmlBodyCompany += `<p>Customer Notes: ${note}</p>`;
+      for (const order of userOrder) {
+        if (!Array.isArray(order.packs) || order.packs.length === 0) {
+          continue;
+        }
 
-    let htmlBodyCompanyAndUser = htmlBody + htmlBodyCompany;
-    // Send confirmation email to the user
-    sendEmail(email, "Order Confirmation", htmlBody);
+        for (const pack of order.packs) {
+          const quantity = Number(pack.quantity);
+          const price = Number(pack.price);
 
-    // Send notification email to the company
-    sendEmail(
-      "1stepcure@gmail.com",
-      "New Order Received",
-      htmlBodyCompanyAndUser
-    );
-    //added coment to refresh DB
-    res.send("Order submitted successfully");
+          if (
+            !Number.isFinite(quantity) ||
+            !Number.isFinite(price) ||
+            quantity < 0 ||
+            price < 0
+          ) {
+            return res.status(400).json("Invalid order details");
+          }
+
+          htmlBody += `
+            <tr>
+              <td>${escapeHtml(order.name)}</td>
+              <td>${escapeHtml(pack.size)}</td>
+              <td>${escapeHtml(quantity)}</td>
+              <td>$${price.toFixed(2)}</td>
+              <td>$${(quantity * price).toFixed(2)}</td>
+            </tr>
+          `;
+        }
+      }
+
+      htmlBody += `
+          </tbody>
+        </table>
+        <p>Total: $${total.toFixed(2)} (Includes Shipping Fees $25)</p>
+        <p>Your card statement may show
+          "HERBAL EXCHANGE LLC" as the merchant descriptor.</p>
+        <p>Shipping Address: ${escapeHtml(address)}</p>
+        <p>Billing Address: ${escapeHtml(billingAddress)}</p>
+        <p>Thank you for your order. You will receive your tracking ID
+          by email when available.</p>
+        <p>For queries, contact us at +1 786-638-8467.</p>
+      `;
+
+      // Do not email card numbers, expiry dates or CVVs.
+      const companyHtml = `
+        <h3>New Order Received</h3>
+        <p>Customer: ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p>
+        <p>Email: ${escapeHtml(email)}</p>
+        <p>Contact Number: ${escapeHtml(phoneNumber)}</p>
+        <p>Customer Notes: ${escapeHtml(note)}</p>
+        ${htmlBody}
+      `;
+
+      await sendEmail(email, "Order Confirmation", htmlBody);
+
+      await sendEmail(
+        process.env.GMAIL_USER,
+        "New Order Received",
+        companyHtml
+      );
+
+      return res.send("Order submitted successfully");
+    } catch (error) {
+      console.error("Checkout email error:", error.message);
+      return res.status(500).json({
+        error: "Unable to send order emails",
+      });
+    }
   },
-  feedBack: (req, res) => {
-    const { feedback, feedbackSenderData } = req.body;
-    const emailBody = `<p>Feedback: ${feedback}</p>
-                          <p>Sender Name: ${feedbackSenderData.firstName} ${feedbackSenderData.lastName}</p>
-                          <p>Sender Email: ${feedbackSenderData.email}</p>`;
 
-    sendEmail("1stepcure@gmail.com", "Feedback Received", emailBody);
+  feedBack: async (req, res) => {
+    try {
+      const { feedback, feedbackSenderData } = req.body;
 
-    res.send("Feedback received successfully");
+      const emailBody = `
+        <p>Feedback: ${escapeHtml(feedback)}</p>
+        <p>Sender Name:
+          ${escapeHtml(feedbackSenderData?.firstName)}
+          ${escapeHtml(feedbackSenderData?.lastName)}
+        </p>
+        <p>Sender Email: ${escapeHtml(feedbackSenderData?.email)}</p>
+      `;
+
+      await sendEmail(
+        process.env.GMAIL_USER,
+        "Feedback Received",
+        emailBody
+      );
+
+      return res.send("Feedback received successfully");
+    } catch (error) {
+      console.error("Feedback email error:", error.message);
+      return res.status(500).json({
+        error: "Unable to send feedback email",
+      });
+    }
   },
-  prescription: (req, res) => {
-    const { email, details, phoneNumber } = req.body;
-    // Send email with prescription details
-    const htmlBody = `<p>Email: ${email}</p><p>Details: ${details}</p><p>Contact Number: ${phoneNumber}</p>`;
-    sendEmail("1stepcure@gmail.com", "Prescription/Query Details", htmlBody);
 
-    res.send("Prescription details received and email sent successfully.");
+  prescription: async (req, res) => {
+    try {
+      const { email, details, phoneNumber } = req.body;
+
+      const htmlBody = `
+        <p>Customer Email: ${escapeHtml(email)}</p>
+        <p>Details: ${escapeHtml(details)}</p>
+        <p>Contact Number: ${escapeHtml(phoneNumber)}</p>
+      `;
+
+      await sendEmail(
+        process.env.GMAIL_USER,
+        "Prescription/Query Details",
+        htmlBody
+      );
+
+      return res.send("Prescription details received successfully.");
+    } catch (error) {
+      console.error("Prescription email error:", error.message);
+      return res.status(500).json({
+        error: "Unable to send prescription email",
+      });
+    }
   },
 };
